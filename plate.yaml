@@ -1,0 +1,6 @@
+path: D:/YOLO11_ANPR/plate_dataset
+train: images/train
+val: images/val
+
+names:
+  0: license_plate

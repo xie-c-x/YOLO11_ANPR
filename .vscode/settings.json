@@ -1,0 +1,12 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    // 固定使用项目环境，避免跑到 base 环境或 Windows 商店的 python 上
+    "python.defaultInterpreterPath": "C:\\Users\\11037\\.conda\\envs\\yolo11_anpr\\python.exe",
+    "python.terminal.activateEnvironment": true,
+    // 终端统一 UTF-8，中文车牌打印不乱码
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.env.windows": {
+        "PYTHONUTF8": "1"
+    }
+}

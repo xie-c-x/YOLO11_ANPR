@@ -1,0 +1,38 @@
+# ===================== Python =====================
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ===================== 数据集 / 原始图片（体积大） =====================
+# 需要时可以按 README 里的脚本重新生成，不放进 Git
+ccpd_raw/
+plate_dataset/
+lprnet_model/
+
+# ===================== 训练输出 =====================
+# 只保留训练好的 best.pt，其余曲线图/日志/last.pt 不进仓库
+scripts/runs/detect/train/*
+!scripts/runs/detect/train/weights/
+scripts/runs/detect/train/weights/*
+!scripts/runs/detect/train/weights/best.pt
+
+# YOLO 官方预训练权重，需要时会自动下载
+scripts/yolo11n.pt
+
+# ===================== 识别输出 =====================
+result_img/
+
+# ===================== 暂未使用的 PaddleOCR 模型 =====================
+scripts/ch_PP-OCRv3_rec_plate/
+
+# ===================== 临时 / 调试文件 =====================
+scripts/4.7.0
+scripts/debug_plate.jpg
+*.log
+
+# ===================== 编辑器 =====================
+.vscode/*
+!.vscode/settings.json
