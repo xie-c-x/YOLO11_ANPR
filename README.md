@@ -3,9 +3,35 @@
 YOLO11 负责“找车牌”，RapidOCR 负责“读车牌号”。
 
 > 检测模型已经训练完成（`scripts/runs/detect/train/weights/best.pt`，验证集 mAP50≈0.92），
-> **不需要重新训练**。下面都是推理和环境相关的改动。
+> **不需要重新训练**。下面都是推理、界面和打包相关的改动。
 
-## 两个入口
+## 桌面应用（推荐）
+
+深色科技风桌面端，入口 `run.py`，打包后是 `dist/ANPR/ANPR.exe`。
+
+![桌面端主界面](design/ui_mockup_dark.png)
+
+功能：
+
+- 1–4 路摄像头，USB / RTSP / ONVIF 三种接入方式混用；
+- 实时检测 + 中文车牌叠加，右侧后台记录（时间、摄像头、车牌、置信度、缩略图）；
+- 识别结果自动写 `logs/plates_YYYYMMDD.csv`，截图保存到 `captures/YYYYMMDD/`；
+- 图片识别页：单张 / 批量，用于验证不同车型、角度、光照；
+- 识别记录页、系统设置页；
+- 配置文件 `config/cameras.json`，下次启动自动恢复。
+
+启动：
+
+```powershell
+conda activate yolo11_anpr
+python run.py
+```
+
+或直接运行打包后的 `dist/ANPR/ANPR.exe`。
+
+> 首次启动要加载 PyTorch + 模型，约 10–20 秒；界面会显示“正在加载识别模型…”。
+
+## 两个命令行入口
 
 | 脚本 | 用途 |
 | --- | --- |
@@ -152,3 +178,38 @@ python scripts/anpr_full.py --width 1280 --height 720
   `ccpd_base + ccpd_green` 合起来的，重跑会得到不同的划分。）
 - `scripts/ch_PP-OCRv3_rec_plate/` 是 PaddleOCR 的识别模型，目前没有用到；
   现在两个脚本都用 RapidOCR 自带模型。
+
+## 桌面端打包（文件夹版）
+
+PyInstaller 会把 Python、PySide6、PyTorch/CUDA、RapidOCR、ONNX Runtime 和
+`best.pt` 一起打进 `dist/ANPR/`。推荐用文件夹版，启动比单文件版快。
+
+```powershell
+conda activate yolo11_anpr
+pyinstaller --noconfirm --windowed --name ANPR `
+  --icon assets\app.ico `
+  --add-data "scripts\runs\detect\train\weights\best.pt;models" `
+  --add-data "$env:CONDA_PREFIX\Lib\site-packages\wsdl;wsdl" `
+  --collect-all ultralytics --collect-all rapidocr_onnxruntime `
+  --collect-all onnxruntime --collect-all onvif --collect-all wsdiscovery `
+  --collect-submodules zeep `
+  --exclude-module paddle --exclude-module paddleocr --exclude-module paddlepaddle `
+  --exclude-module tensorflow --exclude-module tkinter `
+  run.py
+```
+
+产物：
+
+```text
+dist/ANPR/ANPR.exe
+dist/ANPR/_internal/...     # 依赖、模型、Qt 插件
+```
+
+把整个 `dist/ANPR/` 文件夹拷到目标机器即可运行；`config/`、`logs/`、
+`captures/` 会在 exe 同级目录自动创建。
+
+> 提示：不要把整个文件夹放在被沙箱 / 安全软件严格管控的目录里运行，
+> 摄像头设备访问可能被拦（本机实测放在 `D:\ANPR_final\` 这类普通目录正常）。
+
+> 打包体积会比较大（PyTorch + CUDA 依赖，约 4.9GB），这是带 GPU 推理的代价；
+> 目标机器需要安装/自带对应的 NVIDIA 驱动。

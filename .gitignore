@@ -24,6 +24,18 @@ scripts/yolo11n.pt
 
 # ===================== 识别输出 =====================
 result_img/
+logs/
+captures/
+config/
+design/app_*.png
+design/test_detect.mp4
+design/ui_*_check.png
+
+# ===================== 打包产物 =====================
+build/
+dist/
+*.spec
+!ANPR.spec
 
 # ===================== 暂未使用的 PaddleOCR 模型 =====================
 scripts/ch_PP-OCRv3_rec_plate/
